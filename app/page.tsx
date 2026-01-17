@@ -213,7 +213,7 @@ export default function Home() {
           <button onClick={handleStartQuiz} className="start-button">
             Rozpocznij Quiz
           </button>
-          <p className="brand">Basecamp Coffee</p>
+          <p className="brand">☕ Basecamp Coffee</p>
         </div>
       </div>
     );
