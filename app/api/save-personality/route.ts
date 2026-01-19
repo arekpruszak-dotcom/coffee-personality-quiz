@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server';
 
-// Tymczasowe rozwiązanie - zapisuje do Google Sheets przez SheetDB
-// Później można zamienić na bezpośrednie API Google Sheets lub własną bazę danych
-
-const SHEETDB_API_URL = process.env.SHEETDB_API_URL;
-
 export async function POST(request: Request) {
   try {
     const { email, personality, timestamp } = await request.json();
@@ -17,9 +12,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Jeśli skonfigurowano SheetDB, zapisz tam
-    if (SHEETDB_API_URL) {
-      const response = await fetch(SHEETDB_API_URL, {
+    // Pobierz URL z zmiennej środowiskowej w runtime
+    const sheetDbUrl = process.env.SHEETDB_API_URL;
+
+    if (sheetDbUrl) {
+      const response = await fetch(sheetDbUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -33,11 +30,14 @@ export async function POST(request: Request) {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('SheetDB error:', errorText);
         throw new Error('Błąd zapisu do SheetDB');
       }
     } else {
       // Tryb demo - loguj do konsoli
-      console.log('📝 Nowy wynik quizu:', { email, personality, timestamp });
+      console.log('📝 Nowy wynik quizu (demo):', { email, personality, timestamp });
+      console.log('⚠️ SHEETDB_API_URL nie jest ustawiony');
     }
 
     return NextResponse.json({
@@ -54,10 +54,11 @@ export async function POST(request: Request) {
   }
 }
 
-// GET - pobierz statystyki (opcjonalne)
 export async function GET() {
+  const hasSheetDb = !!process.env.SHEETDB_API_URL;
   return NextResponse.json({
     message: 'API działa. Użyj POST aby zapisać osobowość.',
-    version: '1.0'
+    sheetDbConfigured: hasSheetDb,
+    version: '1.1'
   });
 }
