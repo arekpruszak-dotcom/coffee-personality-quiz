@@ -17,6 +17,7 @@ export default function Home() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<PersonalityType[]>([]);
   const [copied, setCopied] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -93,6 +94,37 @@ export default function Home() {
     setCurrentQuestion(0);
     setAnswers([]);
     setCopied(false);
+    setSaveStatus('idle');
+  };
+
+  const handleSaveToProfile = async (personalityId: string) => {
+    const email = prompt('Podaj email z programu lojalnościowego:');
+    if (!email || !email.includes('@')) {
+      alert('Proszę podać prawidłowy adres email.');
+      return;
+    }
+
+    setSaveStatus('saving');
+
+    try {
+      const response = await fetch('/api/save-personality', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          personality: personalityId,
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      if (response.ok) {
+        setSaveStatus('saved');
+      } else {
+        setSaveStatus('error');
+      }
+    } catch {
+      setSaveStatus('error');
+    }
   };
 
   const handleShare = async (topPersonality: typeof personalities['bold-adventurer']) => {
@@ -317,6 +349,16 @@ export default function Home() {
         </div>
 
         <div className="action-buttons">
+          <button
+            onClick={() => handleSaveToProfile(topPersonality.id)}
+            className="action-button primary"
+            disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+          >
+            {saveStatus === 'idle' && '💾 Zapisz w profilu'}
+            {saveStatus === 'saving' && '⏳ Zapisuję...'}
+            {saveStatus === 'saved' && '✓ Zapisano!'}
+            {saveStatus === 'error' && '❌ Błąd - spróbuj ponownie'}
+          </button>
           <button
             onClick={handleSaveImage}
             className="action-button"

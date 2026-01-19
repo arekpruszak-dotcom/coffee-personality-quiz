@@ -310,6 +310,23 @@ body {
   color: var(--dark-brown);
 }
 
+.action-button.primary {
+  background: linear-gradient(135deg, var(--medium-brown) 0%, var(--dark-brown) 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(92, 64, 51, 0.3);
+}
+
+.action-button.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(92, 64, 51, 0.4);
+}
+
+.action-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
