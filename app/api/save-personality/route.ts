@@ -76,9 +76,11 @@ export async function POST(request: Request) {
 
 export async function GET() {
   const hasSheetDb = !!process.env.SHEETDB_API_URL;
+  const urlLength = process.env.SHEETDB_API_URL?.trim().length || 0;
   return NextResponse.json({
     message: 'API działa. Użyj POST aby zapisać osobowość.',
     sheetDbConfigured: hasSheetDb,
-    version: '1.1'
+    urlLength: urlLength,
+    version: '1.2'
   });
 }
