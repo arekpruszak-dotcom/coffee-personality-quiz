@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Source_Sans_3 } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 const libreBaskerville = Libre_Baskerville({
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="pl">
       <body className={`${libreBaskerville.variable} ${sourceSans.variable}`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
